@@ -12,6 +12,14 @@ dist
 dist-ssr
 *.local
 
+# Real environment secrets. Keep the *.example templates tracked, never commit live values.
+.env
+.env.local
+.env.*.local
+
+# TypeScript incremental build info produced by `tsc -b`
+*.tsbuildinfo
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
