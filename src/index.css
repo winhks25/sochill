@@ -40,25 +40,32 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  /* Memphis palette: bright, youthful, high-contrast. */
+  --memphis-pink: #ff4d8d;
+  --memphis-teal: #2ec4b6;
+  --memphis-yellow: #ffd23f;
+  --memphis-purple: #6c5ce7;
+  --memphis-cream: #fff7ea;
+  --memphis-ink: #1b1b1f;
+  --background: var(--memphis-cream);
+  --foreground: var(--memphis-ink);
+  --card: #ffffff;
+  --card-foreground: var(--memphis-ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--memphis-ink);
+  --primary: var(--memphis-pink);
+  --primary-foreground: #ffffff;
+  --secondary: var(--memphis-yellow);
+  --secondary-foreground: var(--memphis-ink);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: var(--memphis-ink);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: var(--memphis-purple);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -67,6 +74,12 @@
 }
 
 .dark {
+  --memphis-pink: #ff7dab;
+  --memphis-teal: #3fd8c9;
+  --memphis-yellow: #ffd95e;
+  --memphis-purple: #a79bff;
+  --memphis-cream: #fff7ea;
+  --memphis-ink: #f3f1ea;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -100,4 +113,106 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ---------------------------------------------------------------------------
+ * Memphis-inspired page styling for the SoChill home page and contact drawer.
+ * Chunky ink borders, flat offset shadows, and bright color pops on cream.
+ * ------------------------------------------------------------------------- */
+
+/* Playful page canvas: soft color blobs plus a low-contrast teal dot grid. */
+.memphis-page {
+  font-family:
+    ui-rounded, "SF Pro Rounded", "Trebuchet MS", system-ui, sans-serif;
+  background-image:
+    radial-gradient(
+      circle at 88% 8%,
+      color-mix(in srgb, var(--memphis-pink) 22%, transparent),
+      transparent 20rem
+    ),
+    radial-gradient(
+      circle at 5% 92%,
+      color-mix(in srgb, var(--memphis-teal) 22%, transparent),
+      transparent 20rem
+    ),
+    radial-gradient(
+      color-mix(in srgb, var(--memphis-teal) 25%, transparent) 2px,
+      transparent 2.6px
+    );
+  background-size: auto, auto, 26px 26px;
+}
+
+/* Headings pop in pink with yellow and teal offset echoes. */
+.memphis-title {
+  color: var(--primary);
+  text-shadow:
+    3px 3px 0 var(--memphis-yellow),
+    6px 6px 0 color-mix(in srgb, var(--memphis-teal) 60%, transparent);
+}
+
+/* Navbar wordmark uses the same treatment, scaled down. */
+.memphis-wordmark {
+  color: var(--primary);
+  text-shadow: 2px 2px 0 var(--memphis-yellow);
+}
+
+/* Sticker chips: event details, drawer contact cards. */
+.memphis-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 2px solid var(--memphis-ink);
+  border-radius: calc(var(--radius) * 1.5);
+  box-shadow: 3px 3px 0 var(--memphis-teal);
+  font-weight: 700;
+}
+
+/* Countdown tiles alternate yellow and pink offset shadows. */
+.memphis-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 4.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 2px solid var(--memphis-ink);
+  border-radius: calc(var(--radius) * 1.2);
+  box-shadow: 4px 4px 0 var(--memphis-yellow);
+}
+.memphis-tile:nth-child(2n) {
+  box-shadow: 4px 4px 0 var(--memphis-pink);
+}
+
+/* Big centered CTA: chunky border, teal offset shadow, playful press. */
+.memphis-cta {
+  border: 2px solid var(--memphis-ink);
+  border-radius: calc(var(--radius) * 1.6);
+  box-shadow: 5px 5px 0 var(--memphis-teal);
+}
+.memphis-cta:not(:disabled):hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--memphis-teal);
+}
+.memphis-cta:not(:disabled):active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--memphis-teal);
+}
+
+/* Keep the playful hover still for reduced-motion users. */
+@media (prefers-reduced-motion: reduce) {
+  .memphis-cta:not(:disabled):hover,
+  .memphis-cta:not(:disabled):active {
+    transform: none;
+  }
+}
+
+/* Visible focus fallback for plain links (buttons/inputs have ring styles). */
+a:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
