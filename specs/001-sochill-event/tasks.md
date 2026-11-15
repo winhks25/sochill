@@ -12,7 +12,7 @@ All planning decisions are resolved, including delayed confirmations on Resend's
 ## Phase 2: Foundational
 
 - [X] T005 Create `registrations` and `registration_rate_limits` in `supabase/migrations/`: `email` is the 3–254-character normalized primary key; `registered_at` is required with insertion-time default; `confirmation_claimed_at` and `confirmation_sent_at` are nullable UTC timestamps; rate-limit key is `(ip_hash, window_start)` with nonnegative `attempts`.
-- [ ] T006 Add private database registration logic in `supabase/migrations/` that atomically rejects duplicates and enforces `capacity = 150` under concurrent requests; revoke anonymous table/function access and enable RLS.
+- [X] T006 Add private database registration logic in `supabase/migrations/` that atomically rejects duplicates and enforces `capacity = 150` under concurrent requests; revoke anonymous table/function access and enable RLS.
 - [ ] T007 Add focused SQL assertions in `supabase/tests/registration.sql` for uniqueness, 149-to-150 concurrency, and anonymous read/write denial.
 - [ ] T008 Define shared event instant and typed public response shapes in `src/lib/api.ts`, matching `contracts/public-interface.md`.
 
