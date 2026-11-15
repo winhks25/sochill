@@ -90,6 +90,7 @@ would be shipped to every browser.
 | --- | --- |
 | `SUPABASE_URL` | Local Supabase endpoint (from `supabase start`). |
 | `SUPABASE_SERVICE_KEY` | Local service key, only if a function needs RLS-elevated access. |
+| `IP_HASH_SECRET` | Keyed-hash secret for the register rate limit; the raw IP is never stored. |
 | `RESEND_API_KEY` | Resend key for local confirmation-email testing. |
 
 ### Deployment secrets (Vault / deploy flags)
@@ -128,7 +129,7 @@ supabase db push
 
 # Deploy the Edge Functions (supply secrets at deploy time or via Vault).
 supabase functions deploy status --no-verify-jwt
-supabase functions deploy register --no-verify-jwt --secret "RESEND_API_KEY=<key>"
+supabase functions deploy register --no-verify-jwt --secret "IP_HASH_SECRET=<secret>" --secret "RESEND_API_KEY=<key>"
 supabase functions deploy process-confirmations --secret "RESEND_API_KEY=<key>"
 
 # Register the daily cron that drains pending confirmations (also defined in migrations/).

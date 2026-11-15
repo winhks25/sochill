@@ -33,7 +33,7 @@ Goal: one valid registration per normalized email, with a hard 150-person cap an
 
 Independent check: valid submit increases count once; duplicate casing/spacing is rejected; simultaneous submissions cannot pass 150; full/closed states prevent registration.
 
-- [ ] T013 [US2] Implement email validation, a keyed hash of trusted client IP, atomic shared limit of 30 attempts per IP per minute, atomic registration call, and structured response codes in `supabase/functions/register/index.ts`.
+- [X] T013 [US2] Implement email validation, a keyed hash of trusted client IP, atomic shared limit of 30 attempts per IP per minute, atomic registration call, and structured response codes in `supabase/functions/register/index.ts`.
 - [ ] T014 [US2] Add the Base UI email Dialog with `type=email`, `name=email`, `autocomplete=email`, success/error states, and accessible labels in `src/components/RegistrationDialog.tsx`.
 - [ ] T015 [US2] Wire the CTA, capacity/closed state, dialog, status refresh, and local success marker in `src/App.tsx`; store no email in `localStorage`.
 - [ ] T016 [US2] Add focused function assertions for invalid email, duplicate, full, closed, and 429 responses in `supabase/functions/register/index.test.ts`.
