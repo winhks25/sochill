@@ -18,7 +18,8 @@ extra_search_path = ["public", "extensions"]
 port = 54322
 shadow_port = 54320
 # Postgres major version booted by `supabase start`.
-major_version = 16
+# CLI v3 supports the current Supabase Postgres line (17); 16 is rejected.
+major_version = 17
 
 [realtime]
 enabled = true
@@ -46,20 +47,10 @@ enable_email_signup = false
 
 # Edge Function authentication.
 # v3 uses `verify_jwt` (not `verify_token`). Public functions are reachable
-# without a Supabase session JWT.
+# without a Supabase session JWT. The private confirmation processor is added
+# here in US3 (T018) once its function exists; it keeps verify_jwt = true.
 [functions.status]
 verify_jwt = false
 
 [functions.register]
 verify_jwt = false
-
-# Private confirmation processor requires a signed request (Cron/Vault secret).
-# `verify_jwt = true` is the default; it is written explicitly for clarity.
-[functions.process-confirmations]
-verify_jwt = true
-
-# Per-function environment variables for local runs. Real secrets are supplied at
-# deploy time via `supabase functions deploy --secret "KEY=value"` or Vault and
-# must never be committed. See README.md for the full list.
-[env]
-# RESEND_API_KEY = ""
