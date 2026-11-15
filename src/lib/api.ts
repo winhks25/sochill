@@ -42,3 +42,16 @@ export interface RegisterErrorResponse {
 
 // Any POST /register response body.
 export type RegisterResponse = RegisteredResponse | RegisterErrorResponse
+
+// Supabase Edge Functions base URL, public by design (anon origin).
+const FUNCTIONS_BASE = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`
+
+// Reads GET /status; throws on network or server failure so the UI can
+// show a temporary-failure state instead of a misleading count.
+export async function getStatus(): Promise<StatusResponse> {
+  const response = await fetch(`${FUNCTIONS_BASE}/status`)
+  if (!response.ok) {
+    throw new Error(`status unavailable (HTTP ${response.status})`)
+  }
+  return response.json() as Promise<StatusResponse>
+}
