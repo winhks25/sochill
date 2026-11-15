@@ -24,7 +24,7 @@ Independent check: at phone and desktop widths, verify date, time, place, countd
 
 - [X] T009 [US1] Implement aggregate-only `GET /status` in `supabase/functions/status/index.ts`; never return registered email addresses.
 - [X] T010 [US1] Build the accessible home layout, event details, countdown, count, and centered CTA in `src/App.tsx`.
-- [ ] T011 [US1] Add the right-side Base UI Contact Us Drawer with `@organizer` and `@winhks25` in `src/App.tsx`.
+- [X] T011 [US1] Add the right-side Base UI Contact Us Drawer with `@organizer` and `@winhks25` in `src/App.tsx`.
 - [ ] T012 [US1] Apply responsive Memphis-inspired styling and visible focus states in `src/index.css`.
 
 ## Phase 4: US2 (P1) — Register once

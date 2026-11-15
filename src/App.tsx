@@ -4,6 +4,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer'
+import {
   CAPACITY,
   EVENT_START_MS,
   getStatus,
@@ -60,6 +68,61 @@ function CountdownTile({ value, label }: { value: number; label: string }) {
   )
 }
 
+// Right-side drawer with the two Telegram handles, one per topic.
+function ContactDrawer() {
+  return (
+    <Drawer swipeDirection="right">
+      <DrawerTrigger
+        render={
+          <Button variant="secondary" className="font-extrabold">
+            Contact Us
+          </Button>
+        }
+      />
+      <DrawerContent className="p-4">
+        <DrawerHeader className="p-0">
+          <DrawerTitle className="memphis-title text-2xl font-extrabold">
+            Talk to us! 💬
+          </DrawerTitle>
+          <DrawerDescription>
+            Pick your channel — we chill on Telegram.
+          </DrawerDescription>
+        </DrawerHeader>
+        <div className="flex flex-col gap-4 px-4 pb-4 pt-3 sm:px-6">
+          <a
+            className="memphis-detail flex flex-col gap-1 no-underline"
+            href="https://t.me/organizer"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="text-xs font-bold uppercase tracking-widest">
+              Event matters
+            </span>
+            <span className="text-lg font-extrabold">@organizer</span>
+            <span className="text-sm text-muted-foreground">
+              Bubble tea ran out? Venue question? Ping the organizers.
+            </span>
+          </a>
+          <a
+            className="memphis-detail flex flex-col gap-1 no-underline"
+            href="https://t.me/winhks25"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className="text-xs font-bold uppercase tracking-widest">
+              Website matters
+            </span>
+            <span className="text-lg font-extrabold">@winhks25</span>
+            <span className="text-sm text-muted-foreground">
+              Page acting weird? Registration glitch? Tell the site builder.
+            </span>
+          </a>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  )
+}
+
 function App() {
   const now = useNow()
   const { status } = useStatus()
@@ -80,7 +143,7 @@ function App() {
         <span className="memphis-wordmark text-xl font-extrabold sm:text-2xl">
           SoChill 🧋
         </span>
-        {/* The Contact Us drawer trigger lands here with T011. */}
+        <ContactDrawer />
       </header>
 
       <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center gap-8 px-4 py-8 text-center sm:px-6">
