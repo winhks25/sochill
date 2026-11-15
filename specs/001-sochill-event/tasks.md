@@ -4,8 +4,8 @@ All planning decisions are resolved, including delayed confirmations on Resend's
 
 ## Phase 1: Setup
 
-- [ ] T001 Initialize the Vite React TypeScript project and lock dependencies in `package.json` and the package lockfile.
-- [ ] T002 Configure Tailwind and the shadcn Base UI registry in `src/index.css` and `components.json`; add only Button, Dialog, Drawer, and Input.
+- [X] T001 Initialize the Vite React TypeScript project and lock dependencies in `package.json` and the package lockfile.
+- [X] T002 Configure Tailwind and the shadcn Base UI registry in `src/index.css` and `components.json`; add only Button, Dialog, Drawer, and Input.
 - [ ] T003 Initialize Supabase local configuration and function auth settings in `supabase/config.toml`.
 - [ ] T004 Document required environment variables and local/deploy commands in `README.md` and `.env.example`.
 
