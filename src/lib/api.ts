@@ -55,3 +55,23 @@ export async function getStatus(): Promise<StatusResponse> {
   }
   return response.json() as Promise<StatusResponse>
 }
+
+// Sends POST /register and resolves to one of the contract outcomes.
+// Network, timeout, and unparseable responses all map to 'unavailable' so
+// the dialog always has a state to render.
+export async function registerParticipant(
+  email: string,
+): Promise<RegisterResponse> {
+  try {
+    const response = await fetch(`${FUNCTIONS_BASE}/register`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email }),
+      // Don't leave the dialog spinning forever on a stalled connection.
+      signal: AbortSignal.timeout(10_000),
+    })
+    return (await response.json()) as RegisterResponse
+  } catch {
+    return { code: 'unavailable' }
+  }
+}
