@@ -34,7 +34,9 @@ begin
     exception
         when unique_violation then
             return query select 'duplicate'::text,
-                (select count(*) from public.registrations);
+                -- RETURN QUERY needs the declared column type (integer);
+                -- a bare count(*) is bigint and would fail at runtime.
+                (select count(*)::int from public.registrations);
     end;
 end;
 $$;
