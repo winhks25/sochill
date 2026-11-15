@@ -20,6 +20,10 @@ dist-ssr
 # TypeScript incremental build info produced by `tsc -b`
 *.tsbuildinfo
 
+# Supabase CLI v3 local state (branch metadata, temp files)
+supabase/.branches/
+supabase/.temp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
