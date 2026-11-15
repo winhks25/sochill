@@ -1,0 +1,65 @@
+# Supabase local configuration for the SoChill event registration app.
+# Written for Supabase CLI v3 (see README.md for start/deploy commands).
+
+# Distinguishes this project's local containers and volumes.
+# Defaults to the working directory name when running `supabase init`.
+project_id = "sochill"
+
+[api]
+enabled = true
+port = 54321
+# REST schemas to expose. The privileged registration logic lives in the private
+# `private` schema and is intentionally not exposed here; the frontend talks to
+# Edge Functions, not to PostgREST directly.
+schemas = ["public"]
+extra_search_path = ["public", "extensions"]
+
+[db]
+port = 54322
+shadow_port = 54320
+# Postgres major version booted by `supabase start`.
+major_version = 16
+
+[realtime]
+enabled = true
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[studio]
+enabled = true
+port = 54323
+
+# Local inbound SMTP for inspecting confirmation emails during local development.
+# Supabase CLI v3 renamed the legacy `[inbucket]` section to `[local_smtp]`.
+[local_smtp]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://localhost:5173"]
+jwt_expiry = 3600
+# The app has no user login, so email sign-up is disabled.
+enable_email_signup = false
+
+# Edge Function authentication.
+# v3 uses `verify_jwt` (not `verify_token`). Public functions are reachable
+# without a Supabase session JWT.
+[functions.status]
+verify_jwt = false
+
+[functions.register]
+verify_jwt = false
+
+# Private confirmation processor requires a signed request (Cron/Vault secret).
+# `verify_jwt = true` is the default; it is written explicitly for clarity.
+[functions.process-confirmations]
+verify_jwt = true
+
+# Per-function environment variables for local runs. Real secrets are supplied at
+# deploy time via `supabase functions deploy --secret "KEY=value"` or Vault and
+# must never be committed. See README.md for the full list.
+[env]
+# RESEND_API_KEY = ""
