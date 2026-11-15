@@ -1,6 +1,7 @@
 // SoChill home page: event details, live countdown, aggregate count, and the
-// centered "Count Me In" call to action. The registration dialog arrives with
-// US2; for now the CTA reflects the backend's full/closed state.
+// centered "Count Me In" call to action opening the registration dialog.
+// Full/closed states disable registration; a local success marker improves
+// the returning visitor's UI while the backend stays authoritative.
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,12 +12,26 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
+import { DialogTrigger } from '@/components/ui/dialog'
+import RegistrationDialog from '@/components/RegistrationDialog'
 import {
   CAPACITY,
   EVENT_START_MS,
   getStatus,
   type StatusResponse,
 } from '@/lib/api'
+
+// Local success marker key: stores a flag only, never the email itself.
+const REGISTERED_KEY = 'sochill:registered'
+
+// Reads the marker; private-mode storage can throw, so treat that as absent.
+function readRegisteredMarker(): boolean {
+  try {
+    return localStorage.getItem(REGISTERED_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 // Seconds tick for the countdown; a single interval keeps it cheap.
 function useNow() {
@@ -125,17 +140,39 @@ function ContactDrawer() {
 
 function App() {
   const now = useNow()
-  const { status } = useStatus()
+  const { status, refresh } = useStatus()
   const countdown = splitCountdown(now)
+
+  // Controlled registration dialog and the returning-visitor marker.
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [registeredLocally, setRegisteredLocally] = useState(
+    readRegisteredMarker,
+  )
+
+  // After a committed registration: persist the flag (no email stored) and
+  // refresh the aggregate count. The dialog keeps showing its success view.
+  const handleRegistered = useCallback(() => {
+    try {
+      localStorage.setItem(REGISTERED_KEY, '1')
+    } catch {
+      // Private storage: the marker is a UI nicety, skip it.
+    }
+    setRegisteredLocally(true)
+    refresh()
+  }, [refresh])
 
   const full = status?.full ?? false
   const closed = status?.closed ?? now >= EVENT_START_MS
   const registrationUnavailable = full || closed
-  const ctaExplanation = full
-    ? 'All 150 spots are taken — see you there!'
-    : closed
-      ? 'Registration closed when the event started.'
-      : null
+  const ctaDisabled =
+    registrationUnavailable || !status || registeredLocally
+  const ctaExplanation = registeredLocally
+    ? 'Your spot is saved — see you there!'
+    : full
+      ? 'All 150 spots are taken — see you there!'
+      : closed
+        ? 'Registration closed when the event started.'
+        : null
 
   return (
     <div className="memphis-page flex min-h-dvh flex-col">
@@ -208,13 +245,17 @@ function App() {
         </section>
 
         <section className="flex flex-col items-center gap-3">
-          <Button
-            size="lg"
-            className="memphis-cta h-14 px-10 text-lg font-extrabold uppercase"
-            disabled={registrationUnavailable || !status}
-          >
-            Count Me In
-          </Button>
+          <DialogTrigger
+            render={
+              <Button
+                size="lg"
+                className="memphis-cta h-14 px-10 text-lg font-extrabold uppercase"
+                disabled={ctaDisabled}
+              >
+                {registeredLocally ? "You're In 🎉" : 'Count Me In'}
+              </Button>
+            }
+          />
           {ctaExplanation && (
             <p className="text-sm font-medium">{ctaExplanation}</p>
           )}
@@ -225,6 +266,12 @@ function App() {
           )}
         </section>
       </main>
+
+      <RegistrationDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onRegistered={handleRegistered}
+      />
 
       <footer className="px-4 pb-6 text-center text-xs text-muted-foreground sm:px-6">
         SoChill · COM1 Foyer · 20 November 2026, 7–9 PM
