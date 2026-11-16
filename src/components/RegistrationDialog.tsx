@@ -1,7 +1,7 @@
 // Base UI email dialog for US2: one valid registration per normalized email.
 // Success and error states mirror the POST /register contract codes; the
 // email goes to the backend only and is never stored locally.
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -50,6 +50,15 @@ function RegistrationDialog({
     confirmation: 'sent' | 'pending'
     count: number
   } | null>(null)
+  const emailRef = useRef<HTMLInputElement>(null)
+
+  // A failed submit disables the button and drops keyboard focus to <body>;
+  // return it to the email field so users can correct and retry.
+  useEffect(() => {
+    if (phase === 'editing' && error && open) {
+      emailRef.current?.focus()
+    }
+  }, [phase, error, open])
 
   // Fresh form every time the dialog closes; Base UI reports every close
   // route (ESC, overlay, close button) through onOpenChange.
@@ -127,6 +136,7 @@ function RegistrationDialog({
                 Email
               </label>
               <Input
+                ref={emailRef}
                 id="registration-email"
                 type="email"
                 name="email"
