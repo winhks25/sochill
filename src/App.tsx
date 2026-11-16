@@ -12,7 +12,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
-import { DialogTrigger } from '@/components/ui/dialog'
 import RegistrationDialog from '@/components/RegistrationDialog'
 import {
   CAPACITY,
@@ -245,17 +244,16 @@ function App() {
         </section>
 
         <section className="flex flex-col items-center gap-3">
-          <DialogTrigger
-            render={
-              <Button
-                size="lg"
-                className="memphis-cta h-14 px-10 text-lg font-extrabold uppercase"
-                disabled={ctaDisabled}
-              >
-                {registeredLocally ? "You're In 🎉" : 'Count Me In'}
-              </Button>
-            }
-          />
+          {/* The dialog is controlled in App, so the CTA is a plain button
+              that opens it; a trigger element needs a Dialog root here. */}
+          <Button
+            size="lg"
+            className="memphis-cta h-14 px-10 text-lg font-extrabold uppercase"
+            disabled={ctaDisabled}
+            onClick={() => setDialogOpen(true)}
+          >
+            {registeredLocally ? "You're In 🎉" : 'Count Me In'}
+          </Button>
           {ctaExplanation && (
             <p className="text-sm font-medium">{ctaExplanation}</p>
           )}
