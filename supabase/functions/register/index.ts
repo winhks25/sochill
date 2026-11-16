@@ -1,9 +1,11 @@
 // Public registration endpoint (POST /register).
 // Validates and normalizes the email, applies a shared 30-attempts-per-IP
 // minute limit, and calls the private atomic registration transaction.
+// A committed registration immediately attempts its confirmation email.
 // Contract: specs/001-sochill-event/contracts/public-interface.md
 import { Pool } from 'jsr:@db/postgres@^0'
 import { EVENT_START_MS } from '../_shared/event.ts'
+import { sendConfirmation } from '../_shared/send-confirmation.ts'
 
 // Shared limit per IP per minute (see specs/001-sochill-event/data-model.md).
 export const MAX_ATTEMPTS_PER_MINUTE = 30
@@ -125,17 +127,20 @@ export async function handleRegister(
         registration_count: number
       }>`select result, registration_count from private.register_participant(${email})`
       switch (outcomes[0]?.result) {
-        case 'registered':
-          // T017 wires the real Resend sender; until then every committed
-          // registration reports a pending confirmation.
+        case 'registered': {
+          // Attempt the confirmation after the committed insert; a quota or
+          // delivery failure never rolls the registration back, and every
+          // non-sent outcome reports 'pending' per the contract.
+          const outcome = await sendConfirmation(connection, email)
           return json(
             {
               code: 'registered',
               count: outcomes[0].registration_count,
-              confirmation: 'pending',
+              confirmation: outcome === 'sent' ? 'sent' : 'pending',
             },
             201,
           )
+        }
         case 'duplicate':
           return json({ code: 'already_registered' }, 409)
         default: // 'full' or no row: the event is at capacity.

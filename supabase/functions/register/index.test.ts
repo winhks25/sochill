@@ -8,10 +8,12 @@ import { assertEquals } from 'jsr:@std/assert@1'
 import { EVENT_START_MS } from '../_shared/event.ts'
 
 // Local database credentials; set before importing the handler module so
-// it reads them at startup.
+// it reads them at startup. RESEND_API_KEY is removed so the confirmation
+// sender takes its no-key failure path instead of touching the network.
 const DB_URL = 'postgres://postgres:postgres@127.0.0.1:54322/postgres'
 Deno.env.set('SUPABASE_DB_URL', DB_URL)
 Deno.env.set('IP_HASH_SECRET', 'test-ip-hash-secret')
+Deno.env.delete('RESEND_API_KEY')
 
 const { handleRegister, ipHash, MAX_ATTEMPTS_PER_MINUTE } = await import(
   './index.ts'
