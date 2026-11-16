@@ -52,7 +52,7 @@ Independent check: one confirmation per new registration; quota-limited sends re
 ## Phase 6: Polish and release validation
 
 - [X] T021 Verify mobile/desktop layout, keyboard focus, autofill, and error states against `specs/001-sochill-event/quickstart.md`; fix only observed issues in `src/App.tsx`, `src/components/RegistrationDialog.tsx`, or `src/index.css`.
-- [ ] T022 Document deployment, sender-domain setup, pending-confirmation Cron monitoring, data retention, and free-tier delayed-email limitations in `README.md`.
+- [X] T022 Document deployment, sender-domain setup, pending-confirmation Cron monitoring, data retention, and free-tier delayed-email limitations in `README.md`.
 - [ ] T023 Deploy the static frontend and Supabase resources, then run the production smoke checks in `specs/001-sochill-event/quickstart.md`.
 
 ## Dependencies and delivery strategy

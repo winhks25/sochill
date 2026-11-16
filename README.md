@@ -145,6 +145,79 @@ Deploy the static `dist/` output. Set the client env vars `VITE_SUPABASE_URL` an
 `VITE_SUPABASE_ANON_KEY` in the Vercel project settings. Do **not** add the Resend or
 service keys.
 
+## Email sender domain (Resend)
+
+The confirmation sender defaults to Resend's shared test identity
+(`onboarding@resend.dev`), which can only deliver to your own Resend account's
+address and is meant for local testing. For the real event:
+
+1. Verify your sending domain in the Resend dashboard (Domains → Add domain)
+   and add the DNS records Resend shows (SPF/DKIM/Return-Path) until the
+   domain reports **Verified**.
+2. Deploy the email-sending functions with your verified identity:
+
+   ```bash
+   supabase functions deploy register --no-verify-jwt \
+     --secret "IP_HASH_SECRET=<secret>" \
+     --secret "RESEND_API_KEY=<key>" \
+     --secret "RESEND_FROM=SoChill <hello@yourdomain.org>"
+   supabase functions deploy process-confirmations \
+     --secret "RESEND_API_KEY=<key>" \
+     --secret "RESEND_FROM=SoChill <hello@yourdomain.org>"
+   ```
+
+Free-tier accounts without a verified domain are also capped at 100 emails per
+day and two emails per second — the delayed-confirmation design below absorbs
+the daily cap; no more than one email goes to any address, so the per-second
+cap is not a concern.
+
+## Pending-confirmation Cron monitoring
+
+The daily job (name `process-confirmations`, 01:00 UTC / 09:00 SGT) calls the
+private `process-confirmations` function to drain registrations whose email is
+still pending. Check it after each scheduled run:
+
+```sql
+-- The schedule exists (exactly one row).
+select jobname, schedule, active from cron.job;
+
+-- The last runs succeeded.
+select runid, status, start_time from cron.run_details
+order by start_time desc limit 5;
+
+-- Registrations still waiting for their email (quota returns these to
+-- pending; nothing here after a run with quota remaining is normal).
+select count(*) from public.registrations
+where confirmation_sent_at is null and confirmation_claimed_at is null;
+
+-- Claimed but never sent: definitive failures or uncertain deliveries.
+-- These never retry automatically; inspect and resolve manually.
+select email, confirmation_claimed_at from public.registrations
+where confirmation_sent_at is null and confirmation_claimed_at is not null;
+```
+
+Failed or uncertain sends are logged server-side (keyed by a hash of the
+address, never the raw email) and stay claimed so a retry cannot duplicate a
+message. If the second query above keeps returning rows across runs, check the
+Edge Function logs in the Supabase dashboard.
+
+## Data retention
+
+- `registrations` stores only what the event needs: the normalized email, the
+  registration timestamp, and the two confirmation timestamps. It is kept for
+  the dedupe/capacity guarantee while registration is open.
+- `registration_rate_limits` holds per-IP hash buckets for one minute each;
+  rows older than one day are pruned on every rate-limit call.
+- After the event, registrations are no longer needed. Export anything you
+  want to keep, then drop the data:
+
+  ```sql
+  truncate public.registrations;
+  truncate public.registration_rate_limits;
+  -- Optionally remove the cron job once the event is over:
+  select cron.unschedule('process-confirmations');
+  ```
+
 ## Security model
 
 - Registration and capacity (`= 150`) are enforced server-side in one database transaction
