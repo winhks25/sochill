@@ -3,7 +3,11 @@
 -- process-confirmations Edge Function, which owns all sending logic.
 -- Research: specs/001-sochill-event/research.md (function exposure).
 
-create extension if not exists pg_cron;
+create extension if not exists pg_cron with schema pg_catalog;
+-- Hosted Supabase requires pg_cron in pg_catalog and explicit cron grants
+-- (Supabase Cron docs); the local stack already grants these.
+grant usage on schema cron to postgres;
+grant all privileges on all tables in schema cron to postgres;
 -- pg_net always creates its own `net` schema; registering the extension in
 -- `extensions` keeps the `net` schema out of `public` (Supabase docs).
 create extension if not exists pg_net with schema "extensions";
