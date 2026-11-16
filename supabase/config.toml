@@ -47,10 +47,14 @@ enable_email_signup = false
 
 # Edge Function authentication.
 # v3 uses `verify_jwt` (not `verify_token`). Public functions are reachable
-# without a Supabase session JWT. The private confirmation processor is added
-# here in US3 (T018) once its function exists; it keeps verify_jwt = true.
+# without a Supabase session JWT. The private confirmation processor keeps
+# verify_jwt = true: the Cron caller presents the service-role JWT stored in
+# Vault, and the handler itself rejects any non-service JWT.
 [functions.status]
 verify_jwt = false
 
 [functions.register]
 verify_jwt = false
+
+[functions.process-confirmations]
+verify_jwt = true

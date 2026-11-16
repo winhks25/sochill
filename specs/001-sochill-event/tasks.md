@@ -45,7 +45,7 @@ Goal: confirmation after successful registration, with automatic delayed deliver
 Independent check: one confirmation per new registration; quota-limited sends remain pending; a repeated processor invocation sends no completed confirmation again; uncertain delivery is visible.
 
 - [X] T017 [US3] Add a shared Resend confirmation sender with deterministic idempotency key in `supabase/functions/_shared/send-confirmation.ts`; call it after committed insert from `supabase/functions/register/index.ts`, record sent state, and return `confirmation: "pending"` when the daily quota is exhausted.
-- [ ] T018 [US3] Reuse the shared sender from `supabase/functions/process-confirmations/index.ts` for secret-authenticated oldest-first pending processing, claim-before-send deduplication, quota stop, and uncertain-outcome logging.
+- [X] T018 [US3] Reuse the shared sender from `supabase/functions/process-confirmations/index.ts` for secret-authenticated oldest-first pending processing, claim-before-send deduplication, quota stop, and uncertain-outcome logging.
 - [ ] T019 [US3] Schedule daily 01:00 UTC Supabase Cron invocation with a Vault-held secret in `supabase/migrations/` to process pending confirmations.
 - [ ] T020 [US3] Add focused quota, retry, no-duplicate, and uncertain-outcome assertions in `supabase/functions/process-confirmations/index.test.ts`.
 
